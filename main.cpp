@@ -1,5 +1,5 @@
-#include <iostream>
-#include <typeinfo>
+#include <iostream> // Для вывода в консоль
+#include <typeinfo> // Для определения типа переменной
 
     // Задание 2
     // Создать перечисление (enum) с возможными вариантами символов для игры в крестики-нолики
@@ -39,22 +39,16 @@
         }
         template <typename T>
         void operator= (T data){ //Оператор присваивания, коректно работает с int, float, char
+            bIsInt = bIsFloat = bIsChar = 0;
             if(typeid(data).name() == typeid(0).name()){
-                bIsInt = 1; bIsFloat = bIsChar = 0;
-                MyData.nData = data;
+                bIsInt = 1; MyData.nData = data;
             }
             if(typeid(data).name() == typeid(.0f).name()){
-                bIsFloat = 1; bIsInt = bIsChar = 0;
-                MyData.fData = data;
+                bIsFloat = 1; MyData.fData = data;
             }
             if(typeid(data).name() == typeid('0').name()){
-                bIsChar = 1; bIsInt = bIsFloat = 0;
-                MyData.cData = data;
+                bIsChar = 1; MyData.cData = data;
             }
-        }
-        template <typename T>
-        void operator<<(T data){
-            this = data;
         }
     };
 
@@ -72,7 +66,6 @@ int main(){
     // Задание 3
     // Создать массив, способный содержать значения такого перечисления и инициализировать его
     Symbols aArray[uSize]{};
-
 
     // Демонстрация 5 задания
     // Можно например в переменную V записать код символа и потом преобразовать его в символ или наоборот
