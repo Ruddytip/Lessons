@@ -25,6 +25,11 @@
         bool bIsInt   : 1;
         bool bIsFloat : 1;
         bool bIsChar  : 1;
+        void showType(){
+            std::cout << "bIsInt: "   << bIsInt   << std::endl;
+            std::cout << "bIsFloat: " << bIsFloat << std::endl;
+            std::cout << "bIsChar: "  << bIsChar  << std::endl;
+        }
         template <typename T>
         T value(){ //Возвращает значение данных хранящихся в структуре
             if(bIsInt)   {return MyData.nData;}
@@ -46,6 +51,10 @@
                 bIsChar = 1; bIsInt = bIsFloat = 0;
                 MyData.cData = data;
             }
+        }
+        template <typename T>
+        void operator<<(T data){
+            this = data;
         }
     };
 
@@ -69,14 +78,24 @@ int main(){
     // Можно например в переменную V записать код символа и потом преобразовать его в символ или наоборот
     MyVariant V;
 
-    V = 100;
-    std::cout << V.value<int>() << std::endl;
-    V = 3.1415f;
-    std::cout << V.value<float>() << std::endl;
-    V = 'V';
-    std::cout << V.value<char>() << std::endl;
-    V = 80; // Код символа P
-    std::cout << V.value<char>() << std::endl;
+    std::cout << "Enter int value: ";
+    int nTest;
+    std::cin >> nTest;
+    V = nTest;
+    V.showType();
+
+    std::cout << "Enter float value: ";
+    float fTest;
+    std::cin >> fTest;
+    V = fTest;
+    V.showType();
+
+    std::cout << "Enter char value: ";
+    char cTest;
+    std::cin >> cTest;
+    V = cTest;
+    V.showType();
+    std::cout << "ID char symbol \'" << V.value<char>() << "\' - " << V.value<int>() << std::endl;
 
     return 0;
 }
