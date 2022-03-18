@@ -1,95 +1,36 @@
 #include <iostream> // Для вывода в консоль
-#include <typeinfo> // Для определения типа переменной
 
-    // Задание 2
-    // Создать перечисление (enum) с возможными вариантами символов для игры в крестики-нолики
-    enum Symbols{Empty = ' ', Cross = 'x', Zero = 'o'};
-
-    // Задание 4
-    // Создать структуру (struct) данных «Поле для игры в крестики-нолики» и снабдить его всеми необходимыми свойствами (подумайте что может понадобиться)
-    struct SField{
-        Symbols aBuffer[9]; // Массив значений ячеек поля
-        bool bFirstTurn : 1;  // 1 - если игрок хочет ходить первым при игре против компьютера
-    };
-
-    // Задание 5
-    // Создать структуру (struct MyVariant) объединяющую: union MyData (int, float, char) и 3-и битовых поля (флага)
-    // указывающими какого типа значение в данный момент содержится в объединении (isInt, isFloat, isChar).
-    // Продемонстрировать пример использования в коде этой структуры 
-    struct MyVariant{ 
-        union Union_Data{
-            int   nData;
-            float fData;
-            char  cData;
-        } MyData;   
-        bool bIsInt   : 1;
-        bool bIsFloat : 1;
-        bool bIsChar  : 1;
-        void showType(){
-            std::cout << "bIsInt: "   << bIsInt   << std::endl;
-            std::cout << "bIsFloat: " << bIsFloat << std::endl;
-            std::cout << "bIsChar: "  << bIsChar  << std::endl;
-        }
-        template <typename T>
-        T value(){ //Возвращает значение данных хранящихся в структуре
-            if(bIsInt)   {return MyData.nData;}
-            if(bIsFloat) {return MyData.fData;}
-            if(bIsChar)  {return MyData.cData;}
-            return 0;
-        }
-        template <typename T>
-        void operator= (T data){ //Оператор присваивания, коректно работает с int, float, char
-            bIsInt = bIsFloat = bIsChar = 0;
-            if(typeid(data).name() == typeid(0).name()){
-                bIsInt = 1; MyData.nData = data;
-            }
-            if(typeid(data).name() == typeid(.0f).name()){
-                bIsFloat = 1; MyData.fData = data;
-            }
-            if(typeid(data).name() == typeid('0').name()){
-                bIsChar = 1; MyData.cData = data;
-            }
-        }
-    };
+// Для коректного обображения кириллицы в Windows перед запуском программы используйте в консоли команду "chcp 65001"
+// В Ubuntu изначально консоль работает в кодировке UTF8 и никаких предварительных действий не требуется
 
 int main(){
-    // Задание 1
-    // Создать и инициализировать переменные пройденных типов данных (short int, int, long long, char, bool, float, double)
-    short int n_short_int = 0;
-    const unsigned int uSize = 9U;
-    long long l_long_long = 10'000'000LL;
-    char cSymbol = 'A';
-    bool bIsEmpty = true;
-    float fPi = 3.1415f;
-    double dwValue = 100.5;
+    /* Задание 1
+    Написать программу, вычисляющую выражение a * (b + (c / d)) и
+    выводящую результат с плавающей точкой, где a, b, c, d – целочисленные константы.
+    Используйте static_cast или С-Style cast к float чтобы выполнить точное деление. */
+    int a(2), b(6), c(10), d(3);
+    std::cout << "Результат с плавающей точкой: " << a * (b + (static_cast<double>(c) / d)) << std::endl;
 
-    // Задание 3
-    // Создать массив, способный содержать значения такого перечисления и инициализировать его
-    char aArray[9];
-    for(int i = 0; i < 9; ++i) aArray[i] = Cross;
+    /* Задание 2
+    Дано целое число. Если оно меньше или равно 21, то выведите на экран разницу между этим числом и числом 21.
+    Если же заданное число больше, чем 21, необходимо вывести удвоенную разницу между этим числом и 21.
+    При выполнении задания следует использовать тернарный оператор (?:). */
+    int data = 5; // Число, которое дано
+    std::cout << "Результат второго задания: " << ((data <= 21)? 21 - data: 2 * (data - 21)) << std::endl;
 
-    // Демонстрация 5 задания
-    // Можно например в переменную V записать код символа и потом преобразовать его в символ или наоборот
-    MyVariant V;
+    /* Задание 3
+    Описать трёхмерный целочисленный массив, размером 3х3х3 и указатель на значения внутри массива и
+    при помощи операции разыменования вывести на экран значение центральной ячейки получившегося куба [1][1][1]. */
+    int cube[3][3][3] = { 0 };
+    cube[1][1][1] = 666; // Изменение значения ячейки отличного от нуля для демонстрации
+    int* ptr = &cube[1][1][1];
+    std::cout << "Значение центральной ячейки получившегося куба [1][1][1]: " << *ptr <<std::endl;
 
-    std::cout << "Enter int value: ";
-    int nTest;
-    std::cin >> nTest;
-    V = nTest;
-    V.showType();
-
-    std::cout << "Enter float value: ";
-    float fTest;
-    std::cin >> fTest;
-    V = fTest;
-    V.showType();
-
-    std::cout << "Enter char value: ";
-    char cTest;
-    std::cin >> cTest;
-    V = cTest;
-    V.showType();
-    std::cout << "ID char symbol \'" << V.value<char>() << "\' - " << V.value<int>() << std::endl;
+    /* Задание 4
+    Написать программу, вычисляющую выражение из первого задания,
+    а переменные для неё объявлены и инициализировать в другом cpp файле. Используйте extern. */
+    extern int a_, b_, c_, d_;
+    std::cout << "Результат с плавающей точкой(extern): " << a_ * (b_ + (static_cast<double>(c_) / d_)) << std::endl;
 
     return 0;
 }
