@@ -1,91 +1,136 @@
 #include <iostream> // Для вывода в консоль
 
-// Написать программу, проверяющую что сумма двух (введенных с клавиатуры) чисел лежит в пределах от 10 до 20 (включительно),
-// если да – вывести строку "true", в противном случае – "false".
-// ===============================================================
-// Предполагается что пользователь всегда вводит корректные данные
-void task1(){
-    const int rangeBegin{ 10 }, rangeEnd{ 20 };
-    int firstNubmer{ 0 }, secondNumber{ 0 }, summ{ 0 };
-    std::cout << "Enter firts number: ";  std::cin >> firstNubmer;
-    std::cout << "Enter second number: "; std::cin >> secondNumber;
-    summ = firstNubmer + secondNumber;
-    if(summ >= rangeBegin && summ <= rangeEnd){
-        std::cout << "true" << std::endl;
-    }else{
-        std::cout << "false" << std::endl;
-    }
-}
-
-// Написать программу, выводящую на экран строку “true”, если две целочисленные константы,
-// объявленные в её начале либо обе равны десяти сами по себе, либо их сумма равна десяти. Иначе "false".
-void task2(){
-    const int VAR1{ 10 }, VAR2{ 10 };
-    const int CONST_VAR{ 10 };
-    if(VAR1 == CONST_VAR && VAR2 == CONST_VAR){
-        std::cout << "true" << std::endl;
-    }else if((VAR1 + VAR2) == CONST_VAR){
-        std::cout << "true" << std::endl;
-    }else{
-        std::cout << "false" << std::endl;
-    }
-}
-
-// Написать программу которая выводит на экран список всех нечетных чисел он 1 до 50.
-// Например: "Your numbers: 1 3 5 7 9 11 13 …". Для решения используйте любой С++ цикл.
-void task3(){
-    const size_t rangeBegin{ 1 }, rangeEnd{ 50 };
-    std::cout << "Your numbers: " << std::endl;
-    for(size_t i = rangeBegin; i <= rangeEnd; ++i){
-        if(i%2 != 0) std::cout << i << ' ';
-    }
+// Написать функцию которая выводит массив double чисел на экран.
+// Параметры функции это сам массив и его размер. Вызвать эту функцию из main.
+// 
+// Тут я немного нарушил требования ТЗ, так как указано именно массив double,
+// но данная функция понадобилась и в других заданиях, поэтому я сделал её шаблонной
+template<class T>
+void printArray(const T* arr, const size_t SIZE){
+    for(size_t i = 0; i < SIZE; ++i) std::cout << arr[i] << ' ';
     std::cout << std::endl;
 }
 
-// Возвращает true, если число number простое
-bool simpleNumber(unsigned int number);
-// Со звёздочкой. Написать программу, проверяющую, является ли некоторое число - простым.
-// Простое число — это целое положительное число, которое делится без остатка только на единицу и себя само.
-// =======================================================================
-// Предполагается что пользователь всегда вводит целое положительное число
-void task4(){
-    unsigned int number{ 0 };
-    std::cout << "Enter number: "; std::cin >> number;
-    std::cout << "Number " << number << (simpleNumber(number) ? " is simple." : " is`n simple.") << std::endl;
+// Задать целочисленный массив, состоящий из элементов 0 и 1.
+// Например: [ 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 ].
+// Написать функцию, заменяющую в принятом массиве 0 на 1, 1 на 0.
+// Выводить на экран массив до изменений и после.
+void negativeArray(int* arr, const size_t SIZE){
+    for(size_t i = 0; i < SIZE; ++i) arr[i] = (arr[i] == 0 ? 1 : 0);
 }
 
-bool simpleNumber(unsigned int number){
-    if(number == 0) return false; // Ноль не простое число   <-|
-    if(number == 1) return true;  // Единица простое число   <-| числа, которые необходимо обработать отдельно 
-    if(number == 2) return false; // Двойка не простое число <-|
-    const size_t rangeBegin{ 2 }, rangeEnd{ number - 1 }; // Проверять числа меньше двух и само число не имеет смысла
-    for(size_t i = rangeBegin; i <= rangeEnd; ++i){
-        if(number%i == 0) return false;
+// Задать пустой целочисленный массив размером 8.
+// Написать функцию, которая с помощью цикла заполнит его значениями 1 4 7 10 13 16 19 22.
+// Вывести массив на экран.
+void writeArrayPeriod3(int *arr, size_t SIZE){
+    for(size_t i = 0; i < SIZE; ++i) arr[i] = i * 3 + 1;
+}
+
+// Структура элемента двусвязного списка
+template<class T>
+struct TNode{
+    T data; // Значение элемента
+    TNode* next; // Следующий элемент в списке
+    TNode* prev; // Предыдущий элемент в списке
+};
+
+// * Написать функцию, которой на вход подаётся одномерный массив и число n (может быть положительным, или отрицательным),
+// при этом метод должен циклически сместить все элементы массива на n позиций.
+// 
+// Мне показалось, что использовать двусторонний список в данной задаче - это оптимальное решение,
+// так как колличество перезаписей ячеек массива всегда будет SIZE * 2 (не считая операций с указателями),
+// не зависимо от размера массива и количества смещений
+template<class T>
+void rotateArray(T* arr, const size_t SIZE, int n){
+    if(SIZE < 2) return; // Не имеет смысла проводить операции с пустым или единичным массивом
+    bool flagSide = (n < 0); n = abs(n); // Флаг направления смещения
+    if(n >= SIZE) n = n%SIZE; // Отсечение лишних смещений, так как не имеет смысла смещать элементы несколько раз по кругу
+    if(n == 0) return; // Не имеет смысла проводить операции, если смещения приводят к исходному состоянию массива
+
+    TNode<T> list[SIZE];
+    TNode<T> *begin, *end, *iterator; // Указатели на начало, конец и итератор двустороннего списка
+    for(size_t i = 0; i < SIZE; ++i){ // Инициализация двустороннего списка
+        list[i].data = arr[i];
+        if(i < SIZE - 1) list[i].next = &list[i + 1];
+        if(i > 0)        list[i].prev = &list[i - 1];
     }
-    return true;
+
+    begin = &list[0]; end = &list[SIZE - 1];
+    begin->prev = end; end->next = begin; // Замыкание двустороннего списка в кольцо
+
+    // Смещение начала двустороннего списка
+    for(size_t i = 0; i < n; ++i) begin = (flagSide ? begin->next : begin->prev);
+
+    iterator = begin;
+    // Перезапись массива в соответствии с новым началом
+    for(size_t i = 0; i < SIZE; ++i){
+        arr[i]   = iterator->data;
+        iterator = iterator->next;
+    }
 }
 
-// Со звёздочкой. Пользователь вводит с клавиатуры число (год): от 1 до 3000.
-// Написать программу, которая определяет является ли этот год високосным.
-// Каждый 4-й год является високосным, кроме каждого 100-го, при этом каждый 400-й – високосный.
-// Вывести результаты работы программы в консоль.
-// ===============================================================
-// Предполагается что пользователь всегда вводит корректные данные
-void task5(){
-    unsigned int year{ 0 };
-    std::cout << "Enter year: "; std::cin >> year;
-    bool four = (year%4 == 0); // Год кратен 4
-    bool hundred = (year%100 == 0); // Год кратен 100
-    bool fourHundred = (year%400 == 0); // Год кратен 400
-    bool bissextile = (four && !hundred) || fourHundred;
-    std::cout << "Year " << year << (bissextile ? " is bissextile." : " is`n bissextile.") << std::endl;
+// ** Написать функцию, которой передается не пустой одномерный целочисленный массив,
+// она должна вернуть истину если в массиве есть место, в котором сумма левой и правой части массива равны.
+// Примеры: checkBalance([1, 1, 1, || 2, 1]) → true, checkBalance ([2, 1, 1, 2, 1]) → false, checkBalance ([10, || 1, 2, 3, 4]) → true.
+// Абстрактная граница показана символами ||, эти символы в массив не входят.
+bool checkBalance(const int* arr, const size_t SIZE){
+    // я не знаю, как трактовать массив с 1 элементом, поэтому в данной реализации подобный массив считается не сбалансированным
+    if(SIZE < 2) return false;
+    int summLeft { 0 }, summRight { 0 };
+    for(size_t i = 0; i < SIZE - 1; ++i){ // количество проверок всегда на 1 меньше, чем элементов
+        summLeft = summRight = 0;
+        for(size_t j = 0; j <= i; ++j)       summLeft+= arr[j];
+        for(size_t k = i + 1; k < SIZE; ++k) summRight+=arr[k];
+        if(summLeft == summRight) return true;
+    }
+    return false;
 }
 
 int main(){
-    // task1();
-    // task2();
-    // task3();
-    // task4();
-    // task5();
+    // Задание 1
+    const size_t SIZE1 = { 10 };
+    double array1[SIZE1] { .0 };
+    std::cout << "Task 1 result: ";
+    printArray(array1, SIZE1);
+    // ==================================================================================
+
+    // Задание 2
+    const size_t SIZE2 = { 10 };
+    int array2[SIZE2] { 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 };
+    std::cout << "Task 2:" << std::endl;
+    std::cout << "\tarray before changes: "; printArray(array2, SIZE2);
+    negativeArray(array2, SIZE2);
+    std::cout << "\tarray after changes:  "; printArray(array2, SIZE2);
+    // ==================================================================================
+
+    // Задание 3
+    const size_t SIZE3 { 8 };
+    int array3[SIZE3] = { 0 };
+    writeArrayPeriod3(array3, SIZE3);
+    std::cout << "Task 3 result: ";
+    printArray(array3, SIZE3);
+    // ==================================================================================
+
+    // Задание 4
+    const size_t SIZE4 { 9 };
+    int n { 0 };
+    int array4[SIZE4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    std::cout << "Task 4:" << std::endl;
+    std::cout << "\tarray before changes: "; printArray(array4, SIZE4);
+    std::cout << "\tenter number of shifts: "; std::cin >> n;
+    // Если n положительное число, то смещение происходит в сторону увеличения индекса,
+    // а если отрицательное, то в сторону уменьшения
+    rotateArray(array4, SIZE4, n);
+    std::cout << "\tarray after changes:  "; printArray(array4, SIZE4);
+    // ==================================================================================
+
+    // Задание 5
+    const size_t SIZE5 { 5 };
+    int array5[SIZE5] = {10, 1, 2, 3, 4};
+    std::cout << "Task 4: array - "; printArray(array5, SIZE5);
+    std::cout << "result balance - " << (checkBalance(array5, SIZE5) ? "true" : "false");
+    std::cout << std::endl;
+    // ==================================================================================
+
     return 0;
 }
