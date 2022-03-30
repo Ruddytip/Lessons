@@ -127,7 +127,7 @@ int main(){
     // Задание 5
     const size_t SIZE5 { 5 };
     int array5[SIZE5] = {10, 1, 2, 3, 4};
-    std::cout << "Task 4: array - "; printArray(array5, SIZE5);
+    std::cout << "Task 5: array - "; printArray(array5, SIZE5);
     std::cout << "result balance - " << (checkBalance(array5, SIZE5) ? "true" : "false");
     std::cout << std::endl;
     // ==================================================================================
