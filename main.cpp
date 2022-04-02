@@ -1,136 +1,211 @@
 #include <iostream> // Для вывода в консоль
+#include <cmath>    // Для функции возведения в квадрат pow(a, b)
+#include <ctime>    // Для функции time(0)
+#include <fstream>  // Для работы с файлами
 
-// Написать функцию которая выводит массив double чисел на экран.
-// Параметры функции это сам массив и его размер. Вызвать эту функцию из main.
-// 
-// Тут я немного нарушил требования ТЗ, так как указано именно массив double,
-// но данная функция понадобилась и в других заданиях, поэтому я сделал её шаблонной
-template<class T>
-void printArray(const T* arr, const size_t SIZE){
-    for(size_t i = 0; i < SIZE; ++i) std::cout << arr[i] << ' ';
-    std::cout << std::endl;
-}
-
-// Задать целочисленный массив, состоящий из элементов 0 и 1.
-// Например: [ 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 ].
-// Написать функцию, заменяющую в принятом массиве 0 на 1, 1 на 0.
-// Выводить на экран массив до изменений и после.
-void negativeArray(int* arr, const size_t SIZE){
-    for(size_t i = 0; i < SIZE; ++i) arr[i] = (arr[i] == 0 ? 1 : 0);
-}
-
-// Задать пустой целочисленный массив размером 8.
-// Написать функцию, которая с помощью цикла заполнит его значениями 1 4 7 10 13 16 19 22.
-// Вывести массив на экран.
-void writeArrayPeriod3(int *arr, size_t SIZE){
-    for(size_t i = 0; i < SIZE; ++i) arr[i] = i * 3 + 1;
-}
-
-// Структура элемента двусвязного списка
-template<class T>
-struct TNode{
-    T data; // Значение элемента
-    TNode* next; // Следующий элемент в списке
-    TNode* prev; // Предыдущий элемент в списке
+// Выделить в памяти динамический одномерный массив типа int. Размер массива запросить у пользователя.
+// Инициализировать его числами степенями двойки: 1, 2, 4, 8, 16, 32, 64, 128 ... Вывести массив на экран.
+// Не забыть освободить память. =) Разбить программу на функции.
+namespace task1{
+    size_t enterSize(){
+        size_t size { 0 };
+        std::cout << "Enter the number of items: ";
+        std::cin >> size;
+        return size;
+    }
+    void initArrayDegree(size_t* array, const size_t SIZE){
+        for(size_t i = 0; i < SIZE; ++i) array[i] = pow(2, i);
+    }
+    void printArray(size_t* array, const size_t SIZE){
+        for(size_t i = 0; i < SIZE; ++i) std::cout << array[i] << ' ';
+        std::cout << std::endl;
+    }
+    size_t* createArray(const size_t SIZE){
+        return new size_t[SIZE];
+    }
+    void deleteArray(size_t* array){
+        delete[] array;
+        array = nullptr;
+    }
 };
 
-// * Написать функцию, которой на вход подаётся одномерный массив и число n (может быть положительным, или отрицательным),
-// при этом метод должен циклически сместить все элементы массива на n позиций.
-// 
-// Мне показалось, что использовать двусторонний список в данной задаче - это оптимальное решение,
-// так как колличество перезаписей ячеек массива всегда будет SIZE * 2 (не считая операций с указателями),
-// не зависимо от размера массива и количества смещений
-template<class T>
-void rotateArray(T* arr, const size_t SIZE, int n){
-    if(SIZE < 2) return; // Не имеет смысла проводить операции с пустым или единичным массивом
-    bool flagSide = (n < 0); n = abs(n); // Флаг направления смещения
-    if(n >= SIZE) n = n%SIZE; // Отсечение лишних смещений, так как не имеет смысла смещать элементы несколько раз по кругу
-    if(n == 0) return; // Не имеет смысла проводить операции, если смещения приводят к исходному состоянию массива
-
-    TNode<T> list[SIZE];
-    TNode<T> *begin, *end, *iterator; // Указатели на начало, конец и итератор двустороннего списка
-    for(size_t i = 0; i < SIZE; ++i){ // Инициализация двустороннего списка
-        list[i].data = arr[i];
-        if(i < SIZE - 1) list[i].next = &list[i + 1];
-        if(i > 0)        list[i].prev = &list[i - 1];
+// Динамически выделить матрицу 4х4 типа int. Инициализировать ее псевдослучайными числами через функцию rand.
+// Вывести на экран. Разбейте вашу программу на функции которые вызываются из main.
+namespace task2{
+    size_t SIZE { 0 };
+    // Заполняет матрицу случайными значениями
+    void initMatrix(int** matrix){
+        srand(time(0));
+        for(size_t i = 0; i < SIZE; ++i){
+            for(size_t j = 0; j < SIZE; ++j){
+                matrix[j][i] = rand() % 10;
+            }
+        }
     }
-
-    begin = &list[0]; end = &list[SIZE - 1];
-    begin->prev = end; end->next = begin; // Замыкание двустороннего списка в кольцо
-
-    // Смещение начала двустороннего списка
-    for(size_t i = 0; i < n; ++i) begin = (flagSide ? begin->next : begin->prev);
-
-    iterator = begin;
-    // Перезапись массива в соответствии с новым началом
-    for(size_t i = 0; i < SIZE; ++i){
-        arr[i]   = iterator->data;
-        iterator = iterator->next;
+    void printMatrix(int** matrix){
+        for(size_t i = 0; i < SIZE; ++i){
+            std::cout << "\t\t";
+            for(size_t j = 0; j < SIZE; ++j){
+                std::cout << matrix[j][i] << ' ';
+            }
+            std::cout << std::endl;
+        }
     }
-}
-
-// ** Написать функцию, которой передается не пустой одномерный целочисленный массив,
-// она должна вернуть истину если в массиве есть место, в котором сумма левой и правой части массива равны.
-// Примеры: checkBalance([1, 1, 1, || 2, 1]) → true, checkBalance ([2, 1, 1, 2, 1]) → false, checkBalance ([10, || 1, 2, 3, 4]) → true.
-// Абстрактная граница показана символами ||, эти символы в массив не входят.
-bool checkBalance(const int* arr, const size_t SIZE){
-    // я не знаю, как трактовать массив с 1 элементом, поэтому в данной реализации подобный массив считается не сбалансированным
-    if(SIZE < 2) return false;
-    int summLeft { 0 }, summRight { 0 };
-    for(size_t i = 0; i < SIZE - 1; ++i){ // количество проверок всегда на 1 меньше, чем элементов
-        summLeft = summRight = 0;
-        for(size_t j = 0; j <= i; ++j)       summLeft+= arr[j];
-        for(size_t k = i + 1; k < SIZE; ++k) summRight+=arr[k];
-        if(summLeft == summRight) return true;
+    int** createMatrix(){
+        int** matrix = new int*[SIZE];
+        for(size_t i = 0; i < SIZE; ++i) matrix[i] = new int[SIZE];
+        return matrix;
     }
-    return false;
-}
+    void deleteMatrix(int** matrix){
+        for(size_t i = 0; i < SIZE; ++i) delete[] matrix[i];
+        delete[] matrix;
+        matrix = nullptr;
+    }
+};
+
+// Написать программу, которая создаст два текстовых файла (*.txt),
+// примерно по 50-100 символов в каждом (особого значения не имеет с каким именно содержимым).
+// Имена файлов запросить у польлзователя.
+namespace task3{
+    std::string enterNameFile(){
+        std::string name("");
+        std::cout << "Enter the file name: ";
+        std::cin >> name;
+        return name + ".txt";
+    }
+    bool writeFileRand(std::string name){
+        srand(time(0));
+        size_t countRow = rand() % 20 + 10; // Случайное количество строк от 10 до 29
+        std::string buff("");
+        std::ofstream fout(name, std::ios_base::trunc);
+        if(!fout.is_open()) return false;
+
+        for(size_t i = 0; i < countRow; ++i){
+            // Случайное количество символов от 5 до 54
+            buff = std::string(rand() % 50 + 5, '0' + rand() % 10);
+            fout << buff << '\n';
+        }
+
+        fout.close();
+        return true;
+    }
+};
+
+// * Написать функцию, «склеивающую» эти файлы в третий текстовый файл (имя файлов спросить у пользователя).
+namespace task4{
+    std::string glueFiles(std::string name1, std::string name2){
+        std::string nameNewFile(task3::enterNameFile());
+        std::string buff(""); // Буфер для построчного копирования
+        std::ifstream fin1, fin2;
+        std::ofstream fout;
+
+        fout.open(nameNewFile, std::ios_base::trunc);
+        if(fout.is_open()){
+            fin1.open(name1);
+            if(fin1.is_open()){
+                while(!fin1.eof()){
+                    buff = "";
+                    std::getline(fin1, buff);
+                    fout << buff << '\n';
+                }
+            fin1.close();
+            }else{
+                std::cerr << "An error occurred when opening the \"" << name1 << "\" file!" << std::endl;
+                return "";
+            }
+
+            fin2.open(name2);
+            if(fin2.is_open()){
+                while(!fin2.eof()){
+                    buff = "";
+                    std::getline(fin2, buff);
+                    fout << buff << '\n';
+                }
+            fin2.close();
+            }else{
+                std::cerr << "An error occurred when opening the \"" << name2 << "\" file!" << std::endl;
+                return "";
+            }
+        fout.close();
+        }else{
+            std::cerr << "An error occurred when creating the \"" << nameNewFile << "\" file!" << std::endl;
+            return "";
+        }
+        return nameNewFile;
+    }
+};
+
+// * Написать программу, которая проверяет присутствует ли указанное пользователем при запуске программы слово
+// в указанном пользователем файле (для простоты работаем только с латиницей). Используем функцию find которая есть в строках std::string.
+namespace task5{
+    bool find(std::string fileName, std::string str){
+        std::ifstream fin(fileName);
+        if(!fin.is_open()){
+            std::cerr << "An error occurred when opening the \"" << fileName << "\" file!" << std::endl;
+            return false;
+        }
+        while(!fin.eof()){
+            std::string buff("");
+            std::getline(fin, buff);
+            if(buff.find(str) != std::string::npos){
+                fin.close();
+                return true;
+            }
+        }
+
+        fin.close();
+        return false;
+    }
+};
 
 int main(){
     // Задание 1
-    const size_t SIZE1 = { 10 };
-    double array1[SIZE1] { .0 };
+    size_t size = task1::enterSize();
+    size_t* array = task1::createArray(size);
+    task1::initArrayDegree(array, size);
     std::cout << "Task 1 result: ";
-    printArray(array1, SIZE1);
-    // ==================================================================================
+    task1::printArray(array, size);
+    task1::deleteArray(array);
+    // =====================================================================================================
 
     // Задание 2
-    const size_t SIZE2 = { 10 };
-    int array2[SIZE2] { 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 };
-    std::cout << "Task 2:" << std::endl;
-    std::cout << "\tarray before changes: "; printArray(array2, SIZE2);
-    negativeArray(array2, SIZE2);
-    std::cout << "\tarray after changes:  "; printArray(array2, SIZE2);
-    // ==================================================================================
+    task2::SIZE = 4; // Размер матрицы
+    int** matrix = task2::createMatrix();
+    task2::initMatrix(matrix);
+    std::cout << "Task 2 result:" << std::endl;
+    task2::printMatrix(matrix);
+    task2::deleteMatrix(matrix);
+    // =====================================================================================================
 
     // Задание 3
-    const size_t SIZE3 { 8 };
-    int array3[SIZE3] = { 0 };
-    writeArrayPeriod3(array3, SIZE3);
-    std::cout << "Task 3 result: ";
-    printArray(array3, SIZE3);
-    // ==================================================================================
+    const size_t coutFiles { 2 };
+    std::string name[coutFiles];
+    std::cout << "Task 3:" << std::endl;
+    for(size_t i = 0; i < coutFiles; ++i){
+        name[i] = task3::enterNameFile();
+        if(task3::writeFileRand(name[i])){
+            std::cout << "The \"" << name[i] << "\" file has been successfully created!" << std::endl;
+        }else{
+            std::cout << "An error occurred when creating the \"" << name[i] << "\" file!" << std::endl;
+        }
+    }
+    // =====================================================================================================
 
     // Задание 4
-    const size_t SIZE4 { 9 };
-    int n { 0 };
-    int array4[SIZE4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    std::cout << "Task 4:" << std::endl;
-    std::cout << "\tarray before changes: "; printArray(array4, SIZE4);
-    std::cout << "\tenter number of shifts: "; std::cin >> n;
-    // Если n положительное число, то смещение происходит в сторону увеличения индекса,
-    // а если отрицательное, то в сторону уменьшения
-    rotateArray(array4, SIZE4, n);
-    std::cout << "\tarray after changes:  "; printArray(array4, SIZE4);
-    // ==================================================================================
+    std::cout << "Task 4: ";
+    std::string nameNewFile = task4::glueFiles(name[0], name[1]);
+    if(!nameNewFile.empty()){
+        std::cout << "the new \"" << nameNewFile << "\" file has been successfully created!" << std::endl;
+    }else{
+        std::cout << "an error occurred while creating or writing a new file!" << std::endl;
+    }
+    // =====================================================================================================
 
     // Задание 5
-    const size_t SIZE5 { 5 };
-    int array5[SIZE5] = {10, 1, 2, 3, 4};
-    std::cout << "Task 5: array - "; printArray(array5, SIZE5);
-    std::cout << "result balance - " << (checkBalance(array5, SIZE5) ? "true" : "false");
-    std::cout << std::endl;
-    // ==================================================================================
+    const std::string fileName("test.txt"), strFind("manor");
+    std::cout << "Task 5 result: the file \"" << fileName << "\" contains the line \"" << strFind << "\" - ";
+    std::cout << (task5::find(fileName, strFind) ? "true" : "false") << std::endl;
+    // =====================================================================================================
 
     return 0;
 }
